@@ -1,0 +1,50 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeeksforGeeks ChatRoom</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="logo"> <b>Chat-Room</b></h1>
+        <form class="form" id="form">
+            <input class="input" type="text" placeholder="Name" id="myname" required />
+            <input class="input" type="text" placeholder="Message" id="message" required />
+            <button class="button">Send Message</button>
+        </form>
+        <div class="messageArea" id="messageArea"></div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        const form = document.getElementById('form');
+        const myname = document.getElementById('myname');
+        const message = document.getElementById('message');
+        const messageArea = document.getElementById('messageArea');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (myname.value && message.value) {
+                socket.emit('chat message', {
+                    name: myname.value,
+                    message: message.value
+                });
+                message.value = '';
+                message.focus();
+            }
+        });
+
+        socket.on('chat message', (data) => {
+            const msg = document.createElement('p');
+            msg.classList.add('message');
+            msg.innerHTML = `<span class="username">${data.name}:</span> ${data.message}`;
+            messageArea.appendChild(msg);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        });
+    </script>
+</body>
+</html>
